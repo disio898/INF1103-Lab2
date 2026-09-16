@@ -10,7 +10,7 @@ while stop_prompt == False:
     stock_quantity = input("Enter stock quantity (type quit to quit): ")
     if stock_quantity == "quit":
             stop_prompt = True
-            print(f"Total units processed: {total_units_processed }")
+            print(f"Total units processed: {total_units_processed }\nFailed entries: {failed_entries}")
             break
     
     if stock_quantity.isdigit() and int(stock_quantity) >= 0:
@@ -23,5 +23,5 @@ while stop_prompt == False:
             break
     else:
         print("An exception occured")    
-
+        failed_entries += 1
     
