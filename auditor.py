@@ -12,7 +12,7 @@ while stop_prompt == False:
             stop_prompt = True
             break
     
-    if stock_quantity.isdigit():
+    if stock_quantity.isdigit() and int(stock_quantity) >= 0:
         stock_quantity_int = int(stock_quantity)
         inventory["Apple"] += stock_quantity_int
         print(f"Current inventory: {stock_quantity_int}")
