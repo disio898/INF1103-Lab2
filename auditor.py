@@ -9,3 +9,4 @@ while stop_prompt == False:
     if stock_quantity == "quit":
             stop_prompt = True
             break
+    inventory["Apple"] += stock_quantity_int
