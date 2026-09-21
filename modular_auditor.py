@@ -9,32 +9,48 @@ delivery_charges = {
 number_of_deliveries = 0
 total_delivery_charges = 0
 stop_prompt = False
-total_units_processed = 0
+#total_units_processed = 0
+stock_quantity_int = 0
+global failed_entries
 failed_entries = 0
+
+def get_valid_input(stock_quantity):
+    
+    if stock_quantity == "quit":
+        return False
+    
+    if stock_quantity.isdigit() and int(stock_quantity) >= 0:
+        global stock_quantity_int
+        stock_quantity_int = int(stock_quantity)
+        if(inventory["Apple"] + stock_quantity_int <= 500):
+            return True
+        else:
+            print("Alert! Stock exceeds 500!")
+            return False
+    else:
+        print("An exception occured")   
+        global failed_entries
+        failed_entries += 1
+        return "Continue"
+
 
 while stop_prompt == False:
 
     stock_quantity = input("Enter stock quantity (type quit to quit): ")
-    if stock_quantity == "quit":
-            stop_prompt = True
-            total_delivery_charges += delivery_charges["Apple"]
-            print(f"Total units processed: {total_units_processed }\nFailed entries: {failed_entries}")
-            print(f"Current inventory: {stock_quantity_int} \n Delivery and tax {delivery_charges["Apple"]*1.1}")
-            print(f"Total deliveries: {number_of_deliveries} \n Total delivery charges: {total_delivery_charges}")
-            break
-    
-    if stock_quantity.isdigit() and int(stock_quantity) >= 0:
-        stock_quantity_int = int(stock_quantity)
-        if(inventory["Apple"] + stock_quantity_int <= 500):
-            inventory["Apple"] += stock_quantity_int
-            total_delivery_charges += delivery_charges["Apple"]
-            number_of_deliveries += 1
-            print(f"Current inventory: {stock_quantity_int} \n Delivery and tax {delivery_charges["Apple"]*1.1}")
-            print(f"Total deliveries: {number_of_deliveries} \n Total delivery charges: {total_delivery_charges}")
-        else:
-            print("Alert! Stock exceeds 500!")
-            break
+    response = get_valid_input(stock_quantity) 
+    if(response == True):
+        inventory["Apple"] += stock_quantity_int
+        total_delivery_charges += delivery_charges["Apple"]
+        number_of_deliveries += 1
+        print(f"Current inventory: {stock_quantity_int} \nDelivery and tax: ${delivery_charges["Apple"]*1.1}")
+        print(f"Total deliveries: {number_of_deliveries} \nTotal delivery charges: ${total_delivery_charges}")
+    elif(response == "Continue"):
+        print(f"Total units processed: {stock_quantity_int}\nFailed entries: {failed_entries}")
     else:
-        print("An exception occured")    
-        failed_entries += 1
+        #To print out if the loop is stopped
+        stop_prompt = True
+        total_delivery_charges += delivery_charges["Apple"]
+        print(f"Total units processed: {stock_quantity_int}\nFailed entries: {failed_entries}")
+        print(f"Current inventory: {stock_quantity_int} \nDelivery and tax: ${delivery_charges["Apple"]*1.1}")
+        print(f"Total deliveries: {number_of_deliveries} \nTotal delivery charges: {total_delivery_charges}")
     
