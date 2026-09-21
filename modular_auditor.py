@@ -43,6 +43,8 @@ def process_delivery(current_total, new_value):
     number_of_deliveries += 1
     return [current_total, total_delivery_charges, number_of_deliveries]
 
+def calculate_tax(amount):
+    return amount*1.1
 
 
 while stop_prompt == False:
@@ -51,8 +53,8 @@ while stop_prompt == False:
     response = get_valid_input(stock_quantity) 
     if(response == True):
         processed_delivery = process_delivery(inventory["Apple"], stock_quantity_int)
-        print(f"Current inventory: {processed_delivery[0]} \nDelivery and tax: ${processed_delivery[1]*1.1}")
-        print(f"Total deliveries: {processed_delivery[2]} \nTotal delivery charges: ${total_delivery_charges}")
+        print(f"Current inventory: {processed_delivery[0]} \nDelivery and tax: ${calculate_tax(processed_delivery[1])}")
+        print(f"Total deliveries: {processed_delivery[2]}")
     elif(response == "Continue"):
         print(f"Total units processed: {stock_quantity_int}\nFailed entries: {failed_entries}")
     else:
@@ -61,5 +63,5 @@ while stop_prompt == False:
         total_delivery_charges += delivery_charges["Apple"]
         print(f"Total units processed: {stock_quantity_int}\nFailed entries: {failed_entries}")
         print(f"Current inventory: {stock_quantity_int} \nDelivery and tax: ${delivery_charges["Apple"]*1.1}")
-        print(f"Total deliveries: {number_of_deliveries} \nTotal delivery charges: {total_delivery_charges}")
+        print(f"Total deliveries: {number_of_deliveries}")
     
