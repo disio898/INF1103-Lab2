@@ -51,20 +51,21 @@ def generate_report(total_units, failed_attempts):
     print(f"Report:\nTotal units processed: {total_units}\nFailed entries: {failed_attempts}")
     return
 
+def generate_other(processed_delivery):
+    print(f"Current inventory: {processed_delivery[0]} \nDelivery and tax: ${calculate_tax(processed_delivery[1])}")
+    print(f"Total deliveries: {processed_delivery[2]}")
+
 while stop_prompt == False:
     stock_quantity = input("Enter stock quantity (type quit to quit): ")
     response = get_valid_input(stock_quantity) 
     if(response == True):
         processed_delivery = process_delivery(inventory["Apple"], stock_quantity_int)
-        print(f"Current inventory: {processed_delivery[0]} \nDelivery and tax: ${calculate_tax(processed_delivery[1])}")
-        print(f"Total deliveries: {processed_delivery[2]}")
+        generate_other(processed_delivery)
     elif(response == "Continue"):
-        print(f"Total units processed: {stock_quantity_int}\nFailed entries: {failed_entries}")
+        generate_report(stock_quantity_int, failed_entries)
     else:
         #To print out if the loop is stopped
         stop_prompt = True
-        #print(f"Total units processed: {stock_quantity_int}\nFailed entries: {failed_entries}")
-        print(f"Current inventory: {processed_delivery[0]} \nDelivery and tax: ${calculate_tax(processed_delivery[1])}")
-        print(f"Total deliveries: {processed_delivery[2]}")
+        generate_other(processed_delivery)
         generate_report(stock_quantity_int, failed_entries)
     
