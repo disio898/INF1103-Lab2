@@ -13,6 +13,7 @@ stop_prompt = False
 stock_quantity_int = 0
 global failed_entries
 failed_entries = 0
+processed_delivery = [0,0,0]
 
 def get_valid_input(stock_quantity):
     
@@ -46,9 +47,11 @@ def process_delivery(current_total, new_value):
 def calculate_tax(amount):
     return amount*1.1
 
+def generate_report(total_units, failed_attempts):
+    print(f"Report:\nTotal units processed: {total_units}\nFailed entries: {failed_attempts}")
+    return
 
 while stop_prompt == False:
-
     stock_quantity = input("Enter stock quantity (type quit to quit): ")
     response = get_valid_input(stock_quantity) 
     if(response == True):
@@ -60,8 +63,8 @@ while stop_prompt == False:
     else:
         #To print out if the loop is stopped
         stop_prompt = True
-        total_delivery_charges += delivery_charges["Apple"]
-        print(f"Total units processed: {stock_quantity_int}\nFailed entries: {failed_entries}")
-        print(f"Current inventory: {stock_quantity_int} \nDelivery and tax: ${delivery_charges["Apple"]*1.1}")
-        print(f"Total deliveries: {number_of_deliveries}")
+        #print(f"Total units processed: {stock_quantity_int}\nFailed entries: {failed_entries}")
+        print(f"Current inventory: {processed_delivery[0]} \nDelivery and tax: ${calculate_tax(processed_delivery[1])}")
+        print(f"Total deliveries: {processed_delivery[2]}")
+        generate_report(stock_quantity_int, failed_entries)
     
