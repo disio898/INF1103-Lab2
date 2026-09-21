@@ -22,6 +22,7 @@ def get_valid_input(stock_quantity):
     if stock_quantity.isdigit() and int(stock_quantity) >= 0:
         global stock_quantity_int
         stock_quantity_int = int(stock_quantity)
+        print(f"testing: {inventory['Apple']}")
         if(inventory["Apple"] + stock_quantity_int <= 500):
             return True
         else:
@@ -33,17 +34,25 @@ def get_valid_input(stock_quantity):
         failed_entries += 1
         return "Continue"
 
+def process_delivery(current_total, new_value):
+    global total_delivery_charges
+    global number_of_deliveries
+    current_total += new_value # current inventory value + new delivery of items
+    inventory["Apple"] = current_total #Sync inventory value to new total
+    total_delivery_charges += delivery_charges["Apple"]
+    number_of_deliveries += 1
+    return [current_total, total_delivery_charges, number_of_deliveries]
+
+
 
 while stop_prompt == False:
 
     stock_quantity = input("Enter stock quantity (type quit to quit): ")
     response = get_valid_input(stock_quantity) 
     if(response == True):
-        inventory["Apple"] += stock_quantity_int
-        total_delivery_charges += delivery_charges["Apple"]
-        number_of_deliveries += 1
-        print(f"Current inventory: {stock_quantity_int} \nDelivery and tax: ${delivery_charges["Apple"]*1.1}")
-        print(f"Total deliveries: {number_of_deliveries} \nTotal delivery charges: ${total_delivery_charges}")
+        processed_delivery = process_delivery(inventory["Apple"], stock_quantity_int)
+        print(f"Current inventory: {processed_delivery[0]} \nDelivery and tax: ${processed_delivery[1]*1.1}")
+        print(f"Total deliveries: {processed_delivery[2]} \nTotal delivery charges: ${total_delivery_charges}")
     elif(response == "Continue"):
         print(f"Total units processed: {stock_quantity_int}\nFailed entries: {failed_entries}")
     else:
