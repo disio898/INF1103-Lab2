@@ -36,16 +36,21 @@ def load_inventory():
     inventory = invfile.read()
     invfile.close()
     inventory = ast.literal_eval(inventory)
-    print(type(inventory))
 
 def save_inventory():
-    invfile = open("inventory.txt", "r")
-    invfile.write(current_session_order)
+    invfile = open("inventory.txt", "w")
+    #print("current session order: ", current_session_order)
+    invfile.write(str(inventory))
+
+def save_orderHistory():
+    orderFile = open("order.txt", "a")
+    print(current_session_order)
+    orderFile.write(str(current_session_order))
 
 def save_state(item_order, item_quantity):
     #get item id
     item_id = inventory[item_order][0]
-    current_session_order.append(item_id, item_order, item_quantity)
+    current_session_order.append([item_order, item_id, item_quantity])
 
 def get_valid_input(stock_quantity):
     
@@ -73,7 +78,10 @@ def process_delivery(item_order, current_total, new_value):
     global total_delivery_charges
     global number_of_deliveries
     current_total += new_value # current inventory value + new delivery of items
-    inventory[item_order] = current_total #Sync inventory value to new total
+    #get itemid
+    item_id = inventory[item_order][0]
+
+    inventory[item_order] = [item_id ,current_total] #Sync inventory value to new total
     total_delivery_charges += delivery_charges[item_order]
     number_of_deliveries += 1
     return [current_total, total_delivery_charges, number_of_deliveries]
@@ -89,7 +97,15 @@ def generate_other(processed_delivery):
     print(f"Current inventory: {processed_delivery[0]} \nDelivery and tax: ${calculate_tax(processed_delivery[1])}")
     print(f"Total deliveries: {processed_delivery[2]}")
 
+def summary():
+    global stop_prompt
+    stop_prompt = True
+    generate_other(processed_delivery)
+    generate_report(stock_quantity_int, failed_entries)
+    #save_inventory()
+
 def get_valid_inventory_item(item_order):
+
     if item_order in inventory:
         return True
     else:
@@ -98,8 +114,14 @@ def get_valid_inventory_item(item_order):
 load_inventory()
 
 while stop_prompt == False:
-
+    print(inventory)
     item_order = input("Enter item to order: ")
+    if item_order == "quit":
+        save_orderHistory()
+        save_inventory()
+        summary()
+        break
+    
     item_validity_inventory = get_valid_inventory_item(item_order)
     if(item_validity_inventory == False):
         print("Item not valid to add to inventory")
@@ -108,7 +130,7 @@ while stop_prompt == False:
     stock_quantity = input("Enter stock quantity (type quit to quit): ")
     response = get_valid_input(stock_quantity) 
     if(response == True):
-        processed_delivery = process_delivery(item_order, inventory[item_order], stock_quantity_int)
+        processed_delivery = process_delivery(item_order, inventory[item_order][1], stock_quantity_int)
         generate_other(processed_delivery)
         save_state(item_order, stock_quantity)
         
@@ -116,8 +138,9 @@ while stop_prompt == False:
         generate_report(stock_quantity_int, failed_entries)
     else:
         #To print out if the loop is stopped
-        stop_prompt = True
-        generate_other(processed_delivery)
-        generate_report(stock_quantity_int, failed_entries)
-        save_inventory
+        summary()
+        #stop_prompt = True
+        #generate_other(processed_delivery)
+        #generate_report(stock_quantity_int, failed_entries)
+        save_inventory()
     
