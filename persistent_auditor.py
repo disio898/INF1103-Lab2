@@ -28,6 +28,7 @@ processed_delivery = [0,0,0]
 #All orders go here before appending to the order.txt file
 current_session_order = [] #<--History Tracking part that was pushed together with step 1(persistence) instead of a separate step
 order_history_aggregate = {'Wireless Mouse': [1001, 0], 'keyboard': [1002, 0], 'USB cable': [1003, 0]}
+order_history = []
 
 #def load_history():
 #    invfile = open("inventory.txt", "r")
@@ -43,13 +44,39 @@ def load_inventory(): #part 4 modularity
         global inventory 
         inventory = invfile.read()
         invfile.close()
+        print(inventory)
         inventory = ast.literal_eval(inventory)[0]
 
+def load_history(): #part 4 modularity
+    invfile = open("inventory.txt", "r")
+    if open("inventory.txt", "r").read() != "":
+        global order_history
+        order_history = invfile.read()
+        invfile.close()
+        order_history = ast.literal_eval(order_history)[1]
+        print("order hist: ", order_history)
+    else:
+        order_history = ""
+
 def save_inventory(): #part 4 modularity
-    invfile = open("inventory.txt", "w")
-    #print("current session order: ", current_session_order)
-    # save total inventory, sequence of orders and total order based on item per session
-    invfile.write("["+ str(inventory) + "," + str(current_session_order)+ "," + str(order_history_aggregate) +"]")
+    
+    with open("inventory.txt", "r") as f:
+        if(str(f.read()) == ""):
+            f.close()
+            invfile = open("inventory.txt", "w")
+            invfile.write("["+ str(inventory) +",[[" + str(order_history) + str(current_session_order)+ "," + str(order_history_aggregate) +"]]]")
+        else:
+            f.close()
+            invfile = open("inventory.txt", "w")
+            order_history.append([current_session_order, order_history_aggregate])
+            print("Current sess order: ", current_session_order)
+            print("aggregate: " , order_history_aggregate)
+            print("order history:", order_history)
+            #print("to save order history: ", order_history)
+            #print("current session order: ", current_session_order)
+            # save total inventory, sequence of orders and total order based on item per session
+            #print(str(order_history))
+            invfile.write("["+ str(inventory) + "," + str(order_history) + "]" )
     print("Saved to inventory.txt successfully")
 
 def save_orderHistory():
@@ -110,10 +137,14 @@ def generate_other(processed_delivery, item_name):
     print(f"Current inventory of all goods: {inventory}")
     print(f"Total deliveries in this session: {processed_delivery[2]}")
 
+def generate_other_summary(processed_delivery):
+    print(f"Current inventory of all goods: {inventory}")
+    print(f"Total deliveries in this session: {processed_delivery[2]}")
+
 def summary():
     global stop_prompt
     stop_prompt = True
-    generate_other(processed_delivery)
+    generate_other_summary(processed_delivery)
     generate_report(stock_quantity_int_current_session, failed_entries)
     #save_inventory()
 
@@ -136,7 +167,7 @@ def display_status_order():
     
 
 load_inventory()
-#load_history()
+load_history()
 
 while stop_prompt == False:
     display_status_order()
