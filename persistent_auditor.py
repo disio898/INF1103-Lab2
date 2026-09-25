@@ -1,14 +1,23 @@
-inventory ={
-  "Apple": 0,
-  "Wireless Mouse": 100,
-  "keyboard": 200,
-  "USB cable": 5
+#import datetime;
+import ast
 
+#Saved inventory to be loaded from inventory.txt instead
+#This inventory holds the current inventory in the application state
+#Inventory values go here too before appending to inventory.txt file
+inventory = {
+#item name as key: [itemid, quantity]
+  "Apple": [0, 3],
+  "Wireless Mouse": [1001, 0],
+  "keyboard": [1002, 0],
+  "USB cable": [1003, 0]
 }
 
 delivery_charges = {
     #prices in $, current delivery charges are fixed regardless of amount ordered
-    "Apple": 0.5
+    "Apple": 0.5,
+    "Wireless Mouse": 1,
+    "keyboard": 1,
+    "USB cable": 1
 }
 number_of_deliveries = 0
 total_delivery_charges = 0
@@ -18,11 +27,25 @@ stock_quantity_int = 0
 global failed_entries
 failed_entries = 0
 processed_delivery = [0,0,0]
-history_tracking = []
+#All orders go here before appending to the order.txt file
+current_session_order = []
 
 def load_inventory():
-    orderfile = open("order.txt", "r")
-    print(orderfile.read())
+    invfile = open("inventory.txt", "r")
+    global inventory 
+    inventory = invfile.read()
+    invfile.close()
+    inventory = ast.literal_eval(inventory)
+    print(type(inventory))
+
+def save_inventory():
+    invfile = open("inventory.txt", "r")
+    invfile.write(current_session_order)
+
+def save_state(item_order, item_quantity):
+    #get item id
+    item_id = inventory[item_order][0]
+    current_session_order.append(item_id, item_order, item_quantity)
 
 def get_valid_input(stock_quantity):
     
@@ -32,8 +55,10 @@ def get_valid_input(stock_quantity):
     if stock_quantity.isdigit() and int(stock_quantity) >= 0:
         global stock_quantity_int
         stock_quantity_int = int(stock_quantity)
-        print(f"testing: {inventory['Apple']}")
-        if(inventory["Apple"] + stock_quantity_int <= 500):
+
+        #Always check that inventory will not exceed 500
+        #Lookup current inventory values
+        if(inventory[item_order][1] + stock_quantity_int <= 500):
             return True
         else:
             print("Alert! Stock exceeds 500!")
@@ -44,12 +69,12 @@ def get_valid_input(stock_quantity):
         failed_entries += 1
         return "Continue"
 
-def process_delivery(current_total, new_value):
+def process_delivery(item_order, current_total, new_value):
     global total_delivery_charges
     global number_of_deliveries
     current_total += new_value # current inventory value + new delivery of items
-    inventory["Apple"] = current_total #Sync inventory value to new total
-    total_delivery_charges += delivery_charges["Apple"]
+    inventory[item_order] = current_total #Sync inventory value to new total
+    total_delivery_charges += delivery_charges[item_order]
     number_of_deliveries += 1
     return [current_total, total_delivery_charges, number_of_deliveries]
 
@@ -64,12 +89,29 @@ def generate_other(processed_delivery):
     print(f"Current inventory: {processed_delivery[0]} \nDelivery and tax: ${calculate_tax(processed_delivery[1])}")
     print(f"Total deliveries: {processed_delivery[2]}")
 
+def get_valid_inventory_item(item_order):
+    if item_order in inventory:
+        return True
+    else:
+        return False
+
+load_inventory()
+
 while stop_prompt == False:
+
+    item_order = input("Enter item to order: ")
+    item_validity_inventory = get_valid_inventory_item(item_order)
+    if(item_validity_inventory == False):
+        print("Item not valid to add to inventory")
+        continue
+
     stock_quantity = input("Enter stock quantity (type quit to quit): ")
     response = get_valid_input(stock_quantity) 
     if(response == True):
-        processed_delivery = process_delivery(inventory["Apple"], stock_quantity_int)
+        processed_delivery = process_delivery(item_order, inventory[item_order], stock_quantity_int)
         generate_other(processed_delivery)
+        save_state(item_order, stock_quantity)
+        
     elif(response == "Continue"):
         generate_report(stock_quantity_int, failed_entries)
     else:
@@ -77,4 +119,5 @@ while stop_prompt == False:
         stop_prompt = True
         generate_other(processed_delivery)
         generate_report(stock_quantity_int, failed_entries)
+        save_inventory
     
