@@ -37,23 +37,23 @@ order_history_aggregate = {'Wireless Mouse': [1001, 0], 'keyboard': [1002, 0], '
 #    print(order_history)
 #    order_history = ast.literal_eval(inventory)[1]
 
-def load_inventory():
+def load_inventory(): #part 4 modularity
     invfile = open("inventory.txt", "r")
     global inventory 
     inventory = invfile.read()
     invfile.close()
     inventory = ast.literal_eval(inventory)[0]
 
-def save_inventory():
+def save_inventory(): #part 4 modularity
     invfile = open("inventory.txt", "w")
     #print("current session order: ", current_session_order)
-    invfile.write("["+ str(inventory) + "," + str(current_session_order)+"]")
+    # save total inventory, sequence of orders and total order based on item per session
+    invfile.write("["+ str(inventory) + "," + str(current_session_order)+ "," + str(order_history_aggregate) +"]")
     print("Saved to inventory.txt successfully")
 
 def save_orderHistory():
     orderFile = open("order.txt", "a")
-    print(current_session_order)
-    orderFile.write(str(current_session_order))
+    orderFile.write("[" + str(current_session_order)+ "," + str(order_history_aggregate) +"]")
 
 def save_state(item_order, item_quantity):
     #get item id
@@ -163,8 +163,5 @@ while stop_prompt == False:
     else:
         #To print out if the loop is stopped
         summary()
-        #stop_prompt = True
-        #generate_other(processed_delivery)
-        #generate_report(stock_quantity_int, failed_entries)
         save_inventory()
     
