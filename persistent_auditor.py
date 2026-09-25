@@ -39,10 +39,11 @@ order_history_aggregate = {'Wireless Mouse': [1001, 0], 'keyboard': [1002, 0], '
 
 def load_inventory(): #part 4 modularity
     invfile = open("inventory.txt", "r")
-    global inventory 
-    inventory = invfile.read()
-    invfile.close()
-    inventory = ast.literal_eval(inventory)[0]
+    if open("inventory.txt", "r").read() != "":
+        global inventory 
+        inventory = invfile.read()
+        invfile.close()
+        inventory = ast.literal_eval(inventory)[0]
 
 def save_inventory(): #part 4 modularity
     invfile = open("inventory.txt", "w")
@@ -104,9 +105,10 @@ def generate_report(total_units, failed_attempts):
     print(f"Report:\nTotal units processed: {total_units}\nFailed entries: {failed_attempts}")
     return
 
-def generate_other(processed_delivery):
-    print(f"Current inventory: {processed_delivery[0]} \nDelivery and tax: ${calculate_tax(processed_delivery[1])}")
-    print(f"Total deliveries: {processed_delivery[2]}")
+def generate_other(processed_delivery, item_name):
+    print(f"Current inventory of {item_name}: {processed_delivery[0]} \nDelivery and tax: ${calculate_tax(processed_delivery[1])}")
+    print(f"Current inventory of all goods: {inventory}")
+    print(f"Total deliveries in this session: {processed_delivery[2]}")
 
 def summary():
     global stop_prompt
@@ -141,7 +143,7 @@ while stop_prompt == False:
 
     item_order = input("Enter item to order: ")
     if item_order == "quit":
-        save_orderHistory()
+        #save_orderHistory()
         save_inventory()
         summary()
         break
@@ -155,7 +157,7 @@ while stop_prompt == False:
     response = get_valid_input(stock_quantity) 
     if(response == True):
         processed_delivery = process_delivery(item_order, inventory[item_order][1], stock_quantity_int)
-        generate_other(processed_delivery)
+        generate_other(processed_delivery, item_order)
         save_state(item_order, stock_quantity)
         
     elif(response == "Continue"):
