@@ -1,15 +1,12 @@
 #import datetime;
 import ast
-
+ 
 #Saved inventory to be loaded from inventory.txt instead
 #This inventory holds the current inventory in the application state
-#Inventory values go here too before appending to inventory.txt file
-inventory = {
+#Inventory values go here too before appending to inventory.txt file 
+inventory = { 
 #item name as key: [itemid, quantity]
-  "Apple": [0, 3],
-  "Wireless Mouse": [1001, 0],
-  "keyboard": [1002, 0],
-  "USB cable": [1003, 0]
+  
 }
 
 delivery_charges = {
@@ -28,7 +25,7 @@ global failed_entries
 failed_entries = 0
 processed_delivery = [0,0,0]
 #All orders go here before appending to the order.txt file
-current_session_order = []
+current_session_order = [] #<--History Tracking part that was pushed together with step 1(persistence) instead of a separate step
 
 def load_inventory():
     invfile = open("inventory.txt", "r")
