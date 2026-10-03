@@ -1,12 +1,13 @@
 #import datetime;
 import ast
- 
+import inventory_manager
+price_table = inventory_manager.price_table
 #Saved inventory to be loaded from inventory.txt instead
 #This inventory holds the current inventory in the application state
 #Inventory values go here too before appending to inventory.txt file 
 inventory = { 
 #item name as key: [itemid, quantity]
-  'Wireless Mouse': [1001, 0], 'keyboard': [1002, 0], 'USB cable': [1003, 0] #default values when inventory.txt is not filled
+  'Wireless Mouse': [1001, 0, f"${price_table["Wireless Mouse"]}"], 'keyboard': [1002, 0, f"${price_table["keyboard"]}"], 'USB cable': [1003, 0, f"${price_table["USB cable"]}"] #default values when inventory.txt is not filled
 }
 
 delivery_charges = {
@@ -120,7 +121,7 @@ def process_delivery(item_order, current_total, new_value):
     item_id = inventory[item_order][0]
     update_order(item_order, new_value, item_id) #only insert the new value as I want to track order from this session only
 
-    inventory[item_order] = [item_id ,current_total] #Sync inventory value to new total
+    inventory[item_order] = [item_id ,current_total, f"${price_table[item_order]}"] #Sync inventory value to new total
     total_delivery_charges += delivery_charges[item_order]
     number_of_deliveries += 1
     return [current_total, total_delivery_charges, number_of_deliveries]
