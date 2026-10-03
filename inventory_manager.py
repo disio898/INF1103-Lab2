@@ -35,7 +35,12 @@ def add_product(product, price):
 def update_stock(product):
     if product in inventory:
         new_stock = input("Enter new stock value")
-        inventory[product][1] = new_stock
+        try :
+            int(new_stock) 
+            inventory[product][1] = int(new_stock)
+        except:
+            print("not a number")
+        
     else:
         print("Product not found")
 
