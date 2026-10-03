@@ -39,8 +39,8 @@ order_history = []
 #    order_history = ast.literal_eval(inventory)[1]
 
 def load_inventory(): #part 4 modularity
-    invfile = open("inventory.txt", "r")
-    if open("inventory.txt", "r").read() != "":
+    invfile = open("inventory.json", "r")
+    if open("inventory.json", "r").read() != "":
         global inventory 
         inventory = invfile.read()
         invfile.close()
@@ -48,8 +48,8 @@ def load_inventory(): #part 4 modularity
         inventory = ast.literal_eval(inventory)[0]
 
 def load_history(): #part 4 modularity
-    invfile = open("inventory.txt", "r")
-    if open("inventory.txt", "r").read() != "":
+    invfile = open("inventory.json", "r")
+    if open("inventory.json", "r").read() != "":
         global order_history
         order_history = invfile.read()
         invfile.close()
@@ -60,10 +60,10 @@ def load_history(): #part 4 modularity
 
 def save_inventory(): #part 4 modularity
     
-    with open("inventory.txt", "r") as f:
+    with open("inventory.json", "r") as f:
         if(str(f.read()) == ""):
             f.close()
-            invfile = open("inventory.txt", "w")
+            invfile = open("inventory.json", "w")
             invfile.write("["+ str(inventory) +",[[" + str(order_history) + str(current_session_order)+ "," + str(order_history_aggregate) +"]]]")
         else:
             f.close()
@@ -77,7 +77,7 @@ def save_inventory(): #part 4 modularity
             # save total inventory, sequence of orders and total order based on item per session
             #print(str(order_history))
             invfile.write("["+ str(inventory) + "," + str(order_history) + "]" )
-    print("Saved to inventory.txt successfully")
+    print("Saved to inventory.json successfully")
 
 def save_orderHistory():
     orderFile = open("order.txt", "a")
