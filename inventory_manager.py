@@ -1,11 +1,15 @@
 import ast
 
 stop_prompt = False
-inventory = {}
+inventory_transaction_history = {"Initialize phase, no data"}
 price_table = {
     'Wireless Mouse' : 5,
     'keyboard': 100,
     'USB cable': 3
+}
+inventory = { 
+#item name as key: [itemid, quantity]
+  'Wireless Mouse': [1001, 0, f"${price_table["Wireless Mouse"]}"], 'keyboard': [1002, 0, f"${price_table["keyboard"]}"], 'USB cable': [1003, 0, f"${price_table["USB cable"]}"] #default values when inventory.txt is not filled
 }
 
 def load_inventory(): #part 4 modularity
@@ -14,8 +18,9 @@ def load_inventory(): #part 4 modularity
         global inventory 
         inventory = invfile.read()
         invfile.close()
+        inventory_transaction_history = ast.literal_eval(inventory)[1]
         inventory = ast.literal_eval(inventory)[0]
-        #print(inventory)
+        print(inventory_transaction_history)
 
 def add_product(product, price):
     id = 0
@@ -45,7 +50,13 @@ def search_product(product_search):
         return print("Item not found")
 
 def save_inventory():
-    return
+    with open("inventory.json", "r") as f:
+        f.close()
+        invfile = open("inventory.json", "w")
+        invfile.write("["+ str(inventory) +",[" +str(inventory_transaction_history) + "]]")
+        
+    return print("Saved to inventory.json successfully")
+    
     
 load_inventory()
 
@@ -73,3 +84,7 @@ while stop_prompt == False:
         search_product(search)
     elif(user_input=="5"):
         save_inventory()
+    elif(user_input=="6"):
+        break
+    else:
+        print("Error, stopping program")
