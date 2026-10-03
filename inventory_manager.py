@@ -9,7 +9,7 @@ price_table = {
 }
 inventory = { 
 #item name as key: [itemid, quantity]
-  'Wireless Mouse': [1001, 0, f"${price_table["Wireless Mouse"]}"], 'keyboard': [1002, 0, f"${price_table["keyboard"]}"], 'USB cable': [1003, 0, f"${price_table["USB cable"]}"] #default values when inventory.txt is not filled
+  'Wireless Mouse': [1001, 0, f'${price_table["Wireless Mouse"]}'], 'keyboard': [1002, 0, f'${price_table["keyboard"]}'], 'USB cable': [1003, 0, f'${price_table["USB cable"]}']
 }
 
 def load_inventory(): #part 4 modularity
