@@ -35,7 +35,7 @@ def add_product(product, price):
 def update_stock(product):
     if product in inventory:
         new_stock = input("Enter new stock value")
-        inventory[product][2] = new_stock
+        inventory[product][1] = new_stock
     else:
         print("Product not found")
 
