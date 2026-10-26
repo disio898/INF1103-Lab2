@@ -1,7 +1,13 @@
 #import datetime;
 import ast
-import inventory_manager
-price_table = inventory_manager.price_table
+import product
+import inventory
+
+price_table = {
+    'Wireless Mouse' : 5,
+    'keyboard': 100,
+    'USB cable': 3
+}
 #Saved inventory to be loaded from inventory.txt instead
 #This inventory holds the current inventory in the application state
 #Inventory values go here too before appending to inventory.txt file 

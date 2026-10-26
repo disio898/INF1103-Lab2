@@ -1,0 +1,20 @@
+[
+    {
+        "product_id": "P001",
+        "name": "Wireless Mouse",
+        "price": 25.0,
+        "stock": 0
+    },
+    {
+        "product_id": "P002",
+        "name": "Keyboard",
+        "price": 45.0,
+        "stock": 0
+    },
+    {
+        "product_id": "P003",
+        "name": "USB Cable",
+        "price": 8.0,
+        "stock": 0
+    }
+]
