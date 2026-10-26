@@ -1,13 +1,19 @@
 class Product:
-    def __init__(self, product_id: str, name: str, price: float, stock: int):
+    MAX_STOCK = 500
+
+    def __init__(self, product_id, name, price, stock=0):
+        if not isinstance(stock, int) or isinstance(stock, bool):
+            raise ValueError("Stock must be an integer.")
+
+        if stock < 0 or stock > self.MAX_STOCK:
+            raise ValueError("Stock must be between 0 and 500.")
+
         if price < 0:
             raise ValueError("Price cannot be negative.")
-        if not isinstance(stock, int) or isinstance(stock, bool) or not 0 <= stock <= 500:
-            raise ValueError("Stock must be an integer between 0 and 500.")
 
-        self.__product_id = product_id
+        self.__product_id = str(product_id)
         self.__name = name
-        self.__price = price
+        self.__price = float(price)
         self.__stock = stock
 
     @property
@@ -26,25 +32,24 @@ class Product:
     def stock(self):
         return self.__stock
 
-    def update_stock(self, quantity: int):
+    def update_stock(self, quantity):
         if not isinstance(quantity, int) or isinstance(quantity, bool):
             raise ValueError("Quantity must be an integer.")
 
-        new_stock = self.__stock + quantity
+        if quantity < 0:
+            raise ValueError("Quantity cannot be negative.")
 
-        if new_stock < 0:
-            raise ValueError("Stock cannot be negative.")
-        if new_stock > 500:
-            raise ValueError("Stock cannot exceed 500.")
+        if self.__stock + quantity > self.MAX_STOCK:
+            raise ValueError("Alert! Stock exceeds 500!")
 
-        self.__stock = new_stock
+        self.__stock += quantity
 
     def display_information(self):
         print(
-            f"ID: {self.__product_id} | "
-            f"Name: {self.__name} | "
-            f"Price: ${self.__price:.2f} | "
-            f"Stock: {self.__stock}"
+            f"Item: {self.__name}, "
+            f"Item ID: {self.__product_id}, "
+            f"Quantity: {self.__stock}, "
+            f"Price: ${self.__price:.2f}"
         )
 
     def to_dict(self):
