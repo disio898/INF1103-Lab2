@@ -170,10 +170,10 @@ def generate_report(failed_attempts):
     print(f"Report:\nTotal units processed: {total_units}\nFailed entries: {failed_attempts}")
     return
 
-def generate_other(processed_delivery, item_name):
-    print(f"Current inventory of {item_name}: {processed_delivery[0]} \nDelivery and tax: ${calculate_tax(processed_delivery[1])}")
-    print(f"Current inventory of all goods: {inventory}")
-    print(f"Total deliveries in this session: {processed_delivery[2]}")
+#def generate_other(processed_delivery, item_name):
+#    print(f"Current inventory of {item_name}: {processed_delivery[0]} \nDelivery and tax: ${calculate_tax(processed_delivery[1])}")
+#    print(f"Current inventory of all goods: {inventory}")
+#    print(f"Total deliveries in this session: {processed_delivery[2]}")
 
 def generate_other_summary():
     print(f"Current inventory of all goods: {inventory.display_all}")
