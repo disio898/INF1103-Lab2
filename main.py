@@ -112,6 +112,7 @@ def save_inventory(inventory):
 
     except OSError as error:
         print(f"Unable to save inventory: {error}")
+        failed_entries += 1
 
 def save_orderHistory():
     orderFile = open("order.txt", "a")
@@ -162,7 +163,10 @@ def process_delivery(item_order, current_total, new_value):
 def calculate_tax(amount):
     return amount*1.1
 
-def generate_report(total_units, failed_attempts):
+def generate_report(failed_attempts):
+    total_units = 0
+    for items in order_history:
+        total_units+=items[1]
     print(f"Report:\nTotal units processed: {total_units}\nFailed entries: {failed_attempts}")
     return
 
@@ -171,15 +175,15 @@ def generate_other(processed_delivery, item_name):
     print(f"Current inventory of all goods: {inventory}")
     print(f"Total deliveries in this session: {processed_delivery[2]}")
 
-def generate_other_summary(processed_delivery):
-    print(f"Current inventory of all goods: {inventory}")
-    print(f"Total deliveries in this session: {processed_delivery[2]}")
+def generate_other_summary():
+    print(f"Current inventory of all goods: {inventory.display_all}")
+    print(f"Total deliveries in this session: {len(order_history)}")
 
 def summary():
     global stop_prompt
     stop_prompt = True
-    generate_other_summary(processed_delivery)
-    generate_report(stock_quantity_int_current_session, failed_entries)
+    generate_other_summary()
+    generate_report(failed_entries)
     #save_inventory()
 
 def get_valid_inventory_item(item_order):
@@ -195,9 +199,11 @@ def update_order(item_order, new_value, item_id): # Added a part to get order_hi
         print(f"New order added: item: {item_order}, item_id: {item_id}, order: {new_value}")
 
 def display_status_order():
-    print("Current orders\n")
-    for item_name, item_info in order_history_aggregate.items():
-        print(f"item: {item_name}, item_id: {item_info[0]}, order: {item_info[1]}")
+    print("Current orders")
+    for item in order_history:
+	    print(item)
+    #for item_name, item_info in order_history_aggregate.items():
+    #    print(f"item: {item_name}, item_id: {item_info[0]}, order: {item_info[1]}")
     
 # adding some items as default values
 def add_sample_products(inventory):
@@ -219,12 +225,14 @@ else:
 #load_history()
 
 def add_product_menu(inventory):
+    global failed_entries
     try:
         product_id = input("Enter product ID: ").strip()
         name = input("Enter product name: ").strip()
 
         if not product_id or not name:
             print("Product ID and name cannot be empty.")
+            failed_entries += 1
             return
 
         price = float(input("Enter product price: $"))
@@ -237,8 +245,10 @@ def add_product_menu(inventory):
 
     except ValueError as error:
         print(f"Invalid input: {error}")
+        failed_entries += 1
     except TypeError as error:
         print(f"Unable to add product: {error}")
+        failed_entries += 1
 
 
 def update_stock_menu(inventory):
@@ -258,10 +268,14 @@ def update_stock_menu(inventory):
         product.update_stock(quantity)
         print("Stock updated successfully.")
         product.display_information()
-
+        order_processed(product.name, quantity)
     except ValueError as error:
         print(f"Unable to update stock: {error}")
+        failed_entries += 1
 
+def order_processed(product, quantity):
+    order_history.append([product, quantity])
+    print(order_history)
 
 def search_product_menu(inventory):
     search_term = input("Enter product ID or name: ").strip()
@@ -278,7 +292,7 @@ while stop_prompt == False:
     
     display_status_order()
 
-    item_order = input("Enter item to order: ")
+    item_order = input("Enter (1-5) or quit: \n1: display inventory \n2: add product \n3: update stock(order/remove) \n4: search product \n5: save inventory\n")
     if item_order == "quit":
         #save_orderHistory()
         save_inventory(inventory)
@@ -299,20 +313,20 @@ while stop_prompt == False:
     elif item_order == "5":
         save_inventory(inventory)
     
-    item_validity_inventory = get_valid_inventory_item(item_order)
-    if(item_validity_inventory == False):
-        print("Item not valid to add to inventory")
-        continue
+    #item_validity_inventory = get_valid_inventory_item(item_order)
+    #if(item_validity_inventory == False):
+    #    print("Item not valid to add to inventory")
+    #    continue
 
-    stock_quantity = input("Enter stock quantity (type quit to quit): ")
-    response = get_valid_input(stock_quantity) 
-    if(response == True):
-        processed_delivery = process_delivery(item_order, inventory[item_order][1], stock_quantity_int)
-        generate_other(processed_delivery, item_order)
-        save_state(item_order, stock_quantity)
+    #stock_quantity = input("Enter stock quantity (type quit to quit): ")
+    #response = get_valid_input(stock_quantity) 
+    #if(response == True):
+    #    processed_delivery = process_delivery(item_order, inventory[item_order][1], stock_quantity_int)
+    #    generate_other(processed_delivery, item_order)
+    #    save_state(item_order, stock_quantity)
         
-    elif(response == "Continue"):
-        generate_report(stock_quantity_int_current_session, failed_entries)
+    elif(item_order == "Continue"):
+        generate_report(failed_entries)
     else:
         #To print out if the loop is stopped
         summary()

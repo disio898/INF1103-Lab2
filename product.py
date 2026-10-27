@@ -15,6 +15,8 @@ class Product:
         self.__name = name
         self.__price = float(price)
         self.__stock = stock
+        #self.__price_w_tax = float(price)
+        self.__price_w_tax = round(self.__price * 1.1, 2)
 
     @property
     def product_id(self):
@@ -31,6 +33,10 @@ class Product:
     @property
     def stock(self):
         return self.__stock
+
+    @property
+    def price_w_tax(self):
+        return self.__price_w_tax
 
     def update_stock(self, quantity):
         if not isinstance(quantity, int) or isinstance(quantity, bool):
@@ -50,6 +56,7 @@ class Product:
             f"Item ID: {self.__product_id}, "
             f"Quantity: {self.__stock}, "
             f"Price: ${self.__price:.2f}"
+            f"Price W Tax: ${self.__price:.2f}"
         )
 
     def to_dict(self):
@@ -57,7 +64,8 @@ class Product:
             "product_id": self.__product_id,
             "name": self.__name,
             "price": self.__price,
-            "stock": self.__stock
+            "stock": self.__stock,
+            "price_w_tax": self.__price_w_tax
         }
 
     @classmethod

@@ -3,18 +3,28 @@
         "product_id": "P001",
         "name": "Wireless Mouse",
         "price": 25.0,
-        "stock": 0
+        "stock": 25,
+        "price_w_tax": 27.5
     },
     {
         "product_id": "P002",
         "name": "Keyboard",
         "price": 45.0,
-        "stock": 0
+        "stock": 0,
+        "price_w_tax": 49.5
     },
     {
         "product_id": "P003",
         "name": "USB Cable",
         "price": 8.0,
-        "stock": 0
+        "stock": 0,
+        "price_w_tax": 8.8
+    },
+    {
+        "product_id": "c",
+        "name": "c",
+        "price": 1.0,
+        "stock": 2,
+        "price_w_tax": 1.1
     }
 ]
