@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 class Product:
     MAX_STOCK = 500
 
@@ -58,6 +60,15 @@ class Product:
             f"Price: ${self.__price:.2f}"
             f"Price W Tax: ${self.__price:.2f}"
         )
+
+    @abstractmethod
+    def get_fulfilment_info(self):
+        """Return a message describing how this product is fulfilled."""
+ 
+    @property
+    @abstractmethod
+    def product_type(self):
+        """Type identifier used for persistence (e.g. 'physical')."""
 
     def to_dict(self):
         return {
