@@ -72,6 +72,7 @@ class Product:
 
     def to_dict(self):
         return {
+            "type": self.product_type,
             "product_id": self.__product_id,
             "name": self.__name,
             "price": self.__price,
