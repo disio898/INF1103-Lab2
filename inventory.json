@@ -1,29 +1,16 @@
 [
     {
         "type": "physical",
-        "product_id": "P001",
-        "name": "Wireless Mouse",
-        "price": 25.0,
+        "product_id": "p0012",
+        "name": "m",
+        "price": 1000.0,
         "stock": 0,
-        "price_w_tax": 27.5,
-        "weight": 0.1
-    },
-    {
-        "type": "physical",
-        "product_id": "P002",
-        "name": "Keyboard",
-        "price": 45.0,
-        "stock": 0,
-        "price_w_tax": 49.5,
-        "weight": 0.8
-    },
-    {
-        "type": "digital",
-        "product_id": "D001",
-        "name": "Photo Editor",
-        "price": 30.0,
-        "stock": 0,
-        "price_w_tax": 33.0,
-        "download_size": 250.0
+        "price_w_tax": 1100.0,
+        "supplier": {
+            "supplier_id": "2",
+            "name": "h",
+            "contact_email": "b@b.com"
+        },
+        "weight": 2.0
     }
 ]
