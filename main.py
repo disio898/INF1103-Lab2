@@ -4,10 +4,17 @@ from pathlib import Path
 from inventory import Inventory
 from order import Order
 from supplier import Supplier
-from PhysicalProduct import PhysicalProduct
-from DigitalProduct import DigitalProduct
 from ProductFactory import ProductFactory
 from CanBeShipped import CanBeShipped
+from discount import (
+    BulkDiscount,
+    DiscountStrategy,
+    NoDiscount,
+    PercentageDiscount,
+    StudentDiscount,
+)
+from inputhelpers import get_non_negative_int, get_positive_float
+from ProductLoader import load_products
 
 DATA_FILE = Path(__file__).with_name("inventory.json")
 
@@ -44,9 +51,9 @@ def add_sample_products(inventory):
     soft = Supplier("S002", "SoftWorks", "hello@softworks.example")
     suppliers.update({tech.supplier_id: tech, soft.supplier_id: soft})
     inventory.load_products([
-        PhysicalProduct("P001", "Wireless Mouse", 25.00, 0, tech, 0.1),
-        PhysicalProduct("P002", "Keyboard", 45.00, 0, tech, 0.8),
-        DigitalProduct("D001", "Photo Editor", 30.00, 0, soft, 250.0),
+        ProductFactory.create("physical", "P001", "Wireless Mouse", 25.00, 0, tech, weight=0.1),
+        ProductFactory.create("physical", "P002", "Keyboard", 45.00, 0, tech, weight=0.8),
+        ProductFactory.create("digital", "D001", "Photo Editor", 30.00, 0, soft, download_size=250.0),
     ])
 
 
@@ -71,10 +78,9 @@ def add_product_menu(inventory):
     global failed_entries
     try:
         kind = input("Product type (physical/digital): ").strip().lower()
-        if kind not in ("physical", "digital"):
-            print("Product type must be 'physical' or 'digital'.")
-            failed_entries += 1
-            return
+        if kind not in ProductFactory.available_types():
+            # Same message the factory raises, but caught before asking for more details.
+            raise ValueError(f"Unknown product type: {kind}")
 
         product_id = input("Enter product ID: ").strip()
         name = input("Enter product name: ").strip()
@@ -83,16 +89,16 @@ def add_product_menu(inventory):
             failed_entries += 1
             return
 
-        price = float(input("Enter product price: $"))
-        stock = int(input("Enter initial stock (0-500): "))
+        price = get_positive_float("Enter product price: $")
+        stock = get_non_negative_int("Enter initial stock (0-500): ")
         supplier = get_or_create_supplier()
 
+        # The factory rejects unknown types with a ValueError (caught below).
         if kind == "physical":
-            weight = float(input("Enter weight (kg): "))
-            product = PhysicalProduct(product_id, name, price, stock, supplier, weight)
+            extra = {"weight": get_positive_float("Enter weight (kg): ")}
         else:
-            size = float(input("Enter download size (MB): "))
-            product = DigitalProduct(product_id, name, price, stock, supplier, size)
+            extra = {"download_size": get_positive_float("Enter download size (MB): ")}
+        product = ProductFactory.create(kind, product_id, name, price, stock, supplier, **extra)
 
         inventory.add_product(product)
         print("Product added successfully.")
@@ -138,6 +144,25 @@ def search_product_menu(inventory):
         print(f"  Shipping cost: ${product.calculate_shipping_cost():.2f}")
 
 
+def choose_discount() -> DiscountStrategy:
+    """Ask which discount strategy to use. Order itself knows nothing about the choices."""
+    while True:
+        choice = input(
+            "Discount: 1 none, 2 percentage, 3 bulk, 4 student(5%) [1]: "
+        ).strip() or "1"
+        if choice == "1":
+            return NoDiscount()
+        if choice == "2":
+            return PercentageDiscount(get_positive_float("Percentage off (1-100): "))
+        if choice == "3":
+            threshold = get_positive_float("Bulk threshold: $")
+            amount = get_positive_float("Amount off: $")
+            return BulkDiscount(threshold, amount)
+        if choice == "4":
+            return StudentDiscount()
+        print("Please choose 1, 2, 3 or 4.")
+
+
 def create_order_menu(inventory):
     global failed_entries
     order_id = input("Enter order ID: ").strip()
@@ -146,7 +171,12 @@ def create_order_menu(inventory):
         failed_entries += 1
         return
 
-    order = Order(order_id)
+    try:
+        order = Order(order_id, choose_discount())
+    except ValueError as error:
+        print(f"Invalid discount: {error}")
+        failed_entries += 1
+        return
     print("Add products to the order (blank product to finish).")
     while True:
         term = input("Product ID or name: ").strip()
@@ -168,6 +198,18 @@ def create_order_menu(inventory):
         order.display_information()
     else:
         print("Order has no lines and was not created.")
+
+
+def load_products_menu(inventory):
+    global failed_entries
+    path = input("CSV file path [products.csv]: ").strip() or "products.csv"
+    try:
+        supplier = get_or_create_supplier()
+    except ValueError as error:
+        print(f"Invalid supplier: {error}")
+        failed_entries += 1
+        return
+    load_products(path, inventory, supplier)
 
 
 def display_status_order():
@@ -195,10 +237,10 @@ def main():
     while True:
         display_status_order()
         choice = input(
-            "Enter (1-6) or quit: \n"
+            "Enter (1-7) or quit: \n"
             "1: display inventory \n2: add product \n"
             "3: update stock(order/remove) \n4: search product \n"
-            "5: save inventory \n6: create order\n"
+            "5: save inventory \n6: create order \n7: load products from CSV\n"
         ).strip().lower()
 
         if choice == "quit":
@@ -217,6 +259,8 @@ def main():
             save_inventory(inventory)
         elif choice == "6":
             create_order_menu(inventory)
+        elif choice == "7":
+            load_products_menu(inventory)
         else:
             global failed_entries
             print("Invalid option.")

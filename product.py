@@ -24,8 +24,8 @@ class Product(ABC):
         if stock < 0 or stock > self.MAX_STOCK:
             raise ValueError("Stock must be between 0 and 500.")
 
-        if price < 0:
-            raise ValueError("Price cannot be negative.")
+        if price <= 0:
+            raise ValueError("Price must be greater than zero.")
 
         self.__product_id: str = str(product_id)
         self.__name: str = name

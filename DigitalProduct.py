@@ -40,14 +40,3 @@ class DigitalProduct(Product):
         data = super().to_dict()
         data["download_size"] = self.__download_size
         return data
-
-    @classmethod
-    def from_dict(cls, data: dict[str, Any], supplier: Supplier) -> "DigitalProduct":
-        return cls(
-            data["product_id"],
-            data["name"],
-            data["price"],
-            data["stock"],
-            supplier,
-            data["download_size"],
-        )
