@@ -45,6 +45,7 @@ class ProductFactory:
         data: dict[str, Any],
         suppliers: dict[str, Supplier] | None = None,
     ) -> Product:
+        
         """Rebuild a saved product (JSON) through create().
 
         Pass a shared `suppliers` dict (keyed by supplier ID) so products with the
